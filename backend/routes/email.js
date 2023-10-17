@@ -9,4 +9,6 @@ router.get("/getmail", emailControllers.getMail);
 
 router.get("/message/:id", emailControllers.getMessage);
 
+router.get("/delete-mail/:id", emailControllers.deleteMail);
+
 module.exports = router;
