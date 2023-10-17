@@ -3,13 +3,15 @@ import Signup from "./components/signup/Signup";
 import Login from "./components/login/Login";
 import Main from "./components/main/Main";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 function App() {
-  let [authToken,setAuthToken] = useState(localStorage.getItem("authMailToken"));
-
-  useEffect(() => {
-    setAuthToken(localStorage.getItem("authMailToken"));
-  }, [])
+  // let [authToken,setAuthToken] = useState(localStorage.getItem("authMailToken"));
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  // useEffect(() => {
+  //   setAuthToken(localStorage.getItem("authMailToken"));
+  // }, [])
+  console.log(isLoggedIn);
   
   return (
     <Switch>
@@ -20,7 +22,7 @@ function App() {
         <Login/>
       </Route>
       <Route path="/main">
-        {authToken ? <Main/> : <Redirect to="/login"/>}
+        {isLoggedIn ? <Main/> : <Redirect to="/login"/>}
       </Route>
     </Switch>
   );

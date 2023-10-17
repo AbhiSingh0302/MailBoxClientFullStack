@@ -2,11 +2,14 @@ import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { useRef } from "react";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { userActions } from "../../stores/user";
 
 const Login = (props) => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const submitHandler = async (e) => {
     try {
@@ -26,8 +29,9 @@ const Login = (props) => {
         });
 
       if(user.data.success){
-        history.replace("/main");
+        dispatch(userActions.loggedIn({email: emailRef.current.value, token: user.data.token}))
         localStorage.setItem("authMailToken",user.data.token)
+        history.replace("/main");
       }else{
         alert("Failed!!");
       }
