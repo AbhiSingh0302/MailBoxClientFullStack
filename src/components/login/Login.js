@@ -31,7 +31,7 @@ const Login = (props) => {
       if(user.data.success){
         dispatch(userActions.loggedIn({email: emailRef.current.value, token: user.data.token}))
         localStorage.setItem("authMailToken",user.data.token)
-        history.replace("/main");
+        history.replace("/mail");
       }else{
         alert("Failed!!");
       }
