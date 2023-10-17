@@ -5,6 +5,7 @@ import Main from "./components/main/Main";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Mail from "./components/Mail";
+import Message from "./components/Message";
 
 function App() {
   // let [authToken,setAuthToken] = useState(localStorage.getItem("authMailToken"));
@@ -24,6 +25,9 @@ function App() {
       </Route>
       <Route path="/mail">
         {isLoggedIn ? <Mail/> : <Redirect to="/login"/>}
+      </Route>
+      <Route path="/message/:id">
+        <Message/>
       </Route>
     </Switch>
   );

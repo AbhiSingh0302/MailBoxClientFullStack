@@ -5,7 +5,7 @@ import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useSelector } from "react-redux";
 
-const Main = () => {
+const Main = (props) => {
   const [editorState, setEditorState] = useState("");
   const emailRef = useRef("");
   const email = useSelector(state => state.user.email);
@@ -31,6 +31,7 @@ const Main = () => {
       })
       
       alert("Mail has been sent");
+      props.onSend();
     } catch (error) {
       alert("Sending mail failed!!");
     }
@@ -47,8 +48,8 @@ const Main = () => {
           editorState={editorState}
           wrapperClassName="demo-wrapper"
           editorClassName="demo-editor"
-          wrapperStyle={{ border: "2px solid black", margin: "1rem 0" }}
-          editorStyle={{ height: "50vh" }}
+          wrapperStyle={{ border: "2px solid black", margin: "1rem 0", backgroundColor: "white" }}
+          editorStyle={{ height: "50vh"}}
           onEditorStateChange={onEditorStateChange}
         />
         <Button onClick={sendMailHandler}>Send</Button>

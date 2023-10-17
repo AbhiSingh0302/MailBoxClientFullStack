@@ -4,15 +4,21 @@ const EmailSchema = new mongoose.Schema({
     from:{
         type: String,
         required: true,
-        unique: true,
+        unique: false
     },
     to:{
         type: String,
-        required: true
+        required: true,
+        unique: false
     },
     text:{
         type: String,
-        required: true
+        required: true,
+        unique: false
+    },
+    read:{
+        type: Boolean,
+        default: false
     }
 })
 

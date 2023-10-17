@@ -1,40 +1,123 @@
-import { useState } from "react";
-import { Button, Col, Container, Navbar, Row } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Badge, Button, Col, Container, Row } from "react-bootstrap";
 import Main from "./main/Main";
+import MailContent from "./MailContent";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const Mail = () => {
-  const [compose, setCompose] = useState(false);  
+  const [compose, setCompose] = useState(true);
+
+  const [emailState, setEmailStateStatus] = useState([]);
+
+  const emailId = useSelector(status => status.user.email);
+
+  const [unReadMails, setUnReadMails] = useState("");
+
+  useEffect(() => {
+    axios.get(`http://localhost:4000/getmail`, {
+      params: {
+        status: "inbox",
+        email: emailId
+      },
+    }).then(resp => {
+      let i=0;
+      const emails = resp.data.data;
+      emails.forEach(data => {
+        if(!data.read){
+          i++;
+        }
+      })
+      setUnReadMails(i);
+    })
+  }, [])
 
   const composeEmailHandler = () => {
     setCompose(true);
+  };
+
+  const inboxEmailHandler = async () => {
+    try {
+    setCompose(false);
+
+    const emails = await axios.get(`http://localhost:4000/getmail`, {
+      params: {
+        status: "inbox",
+        email: emailId
+      },
+    });
+    setEmailStateStatus(emails.data.data);
+  } catch (error) {
+    console.log(error);
+    setEmailStateStatus([]);
   }
-  
+  };
+
+  const sentEmailHandler = async () => {
+    try {
+    setCompose(false);
+
+    const emails = await axios.get(`http://localhost:4000/getmail`, {
+      params: {
+        status: "sent",
+        email: emailId
+      },
+    });
+    setEmailStateStatus(emails.data.data);
+  } catch (error) {
+    console.log(error);
+    setEmailStateStatus([]);
+  }
+  };
+
+  const sendHandler = () => {
+    axios.get(`http://localhost:4000/getmail`, {
+      params: {
+        status: "inbox",
+        email: emailId
+      },
+    }).then(resp => {
+      let i=0;
+      const emails = resp.data.data;
+      emails.forEach(data => {
+        if(!data.read){
+          i++;
+        }
+      })
+      setUnReadMails(i);
+    })
+  }
+
   return (
     <Container fluid>
       <Row>
-        <Col style={{backgroundColor: "rgb(208, 168, 119)", height: "100vh"}} sm={3}>
-            <br/>
-        <div className="d-grid gap-2">
-              <Button variant="light" size="lg" onClick={composeEmailHandler}>
-                Compose
-              </Button>
-            </div>
-            <br/>
-            <div className="d-grid gap-2">
-              <Button variant="light" size="lg">
-                Inbox
-              </Button>
-            </div>
+        <Col
+          style={{ backgroundColor: "rgb(208, 168, 119)", height: "100vh" }}
+          sm={3}
+        >
           <br />
-            <div className="d-grid gap-2">
-              <Button variant="light" size="lg">
-                Sent
-              </Button>
-            </div>
+          <div className="d-grid gap-2">
+            <Button variant="light" size="lg" onClick={composeEmailHandler}>
+              Compose
+            </Button>
+          </div>
           <br />
-            
+          <div className="d-grid gap-2">
+            <Button variant="light" size="lg" onClick={inboxEmailHandler}>
+              Inbox <Badge bg="primary">{unReadMails} unread</Badge>
+            </Button>
+          </div>
+          <br />
+          <div className="d-grid gap-2">
+            <Button variant="light" size="lg" onClick={sentEmailHandler}>
+              Sent
+            </Button>
+          </div>
+          <br />
         </Col>
-        <Col style={{height: "100vh", backgroundColor: "#44f9e3"}} sm={9}>{compose && <Main/>}</Col>
+        <Col style={{ height: "100vh", backgroundColor: "#44f9e3" }} sm={9}>
+          {compose ? <Main onSend={sendHandler}/> : <MailContent mails={emailState} />}
+        </Col>
       </Row>
     </Container>
     // <>
