@@ -4,45 +4,32 @@ import Main from "./main/Main";
 import MailContent from "./MailContent";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import useFetch from "../hooks/useFetch";
 
 const Mail = () => {
   const [compose, setCompose] = useState(true);
 
   const [emailState, setEmailStateStatus] = useState([]);
 
-  const emailId = useSelector(status => status.user.email);
+  const emailId = useSelector((status) => status.user.email);
 
-  const token = useSelector(status => status.user.token);
+  const token = useSelector((status) => status.user.token);
 
   const [unReadMails, setUnReadMails] = useState("");
 
+  const emails = useFetch();
+
   useEffect(() => {
-
-    const intervalId = setInterval(() => {
-      console.log("hello");
-      axios.get(`http://localhost:4000/getmail`, {
-        params: {
-          status: "inbox",
-          email: emailId
-        },
-        headers:{token}
-      }).then(resp => {
-        let i=0;
-        const emails = resp.data.data;
-        emails.forEach(data => {
-          if(!data.read){
-            i++;
-          }
-        })
-        setUnReadMails(i);
-      })
-    }, 2000) 
-    
-    return () => {
-      clearInterval(intervalId);
+    let i = 0;
+    if(emails){
+      emails.forEach((data) => {
+        if (!data.read) {
+          i++;
+        }
+      });
+      setUnReadMails(i);
     }
-
-  },[emailId, token])
+  },[emails])
 
   const composeEmailHandler = () => {
     setCompose(true);
@@ -50,55 +37,45 @@ const Mail = () => {
 
   const inboxEmailHandler = async () => {
     try {
-    setCompose(false);
+      setCompose(false);
 
-    const emails = await axios.get(`http://localhost:4000/getmail`, {
-      params: {
-        status: "inbox",
-        email: emailId
-      },headers:{token}
-    });
-    setEmailStateStatus(emails.data.data);
-  } catch (error) {
-    console.log(error);
-    setEmailStateStatus([]);
-  }
+      console.log(emails);
+      setEmailStateStatus(emails);
+    } catch (error) {
+      console.log(error);
+      setEmailStateStatus([]);
+    }
   };
 
   const sentEmailHandler = async () => {
     try {
-    setCompose(false);
+      setCompose(false);
 
-    const emails = await axios.get(`http://localhost:4000/getmail`, {
-      params: {
-        status: "sent",
-        email: emailId
-      },headers:{token}
-    });
-    setEmailStateStatus(emails.data.data);
-  } catch (error) {
-    console.log(error);
-    setEmailStateStatus([]);
-  }
+      const emails = await axios.get(`http://localhost:4000/getmail`, {
+        params: {
+          status: "sent",
+          email: emailId,
+        },
+        headers: { token },
+      });
+      setEmailStateStatus(emails.data.data);
+    } catch (error) {
+      console.log(error);
+      setEmailStateStatus([]);
+    }
   };
 
   const sendHandler = () => {
-    axios.get(`http://localhost:4000/getmail`, {
-      params: {
-        status: "inbox",
-        email: emailId
-      },headers:{token}
-    }).then(resp => {
-      let i=0;
-      const emails = resp.data.data;
-      emails.forEach(data => {
-        if(!data.read){
+    let i = 0;
+    if(emails){
+      emails.forEach((data) => {
+        if (!data.read) {
           i++;
         }
-      })
+      });
       setUnReadMails(i);
-    })
-  }
+    }
+  };
 
   return (
     <Container fluid>
@@ -128,7 +105,11 @@ const Mail = () => {
           <br />
         </Col>
         <Col style={{ height: "100vh", backgroundColor: "#44f9e3" }} sm={9}>
-          {compose ? <Main onSend={sendHandler}/> : <MailContent mails={emailState} />}
+          {compose ? (
+            <Main onSend={sendHandler} />
+          ) : (
+            <MailContent mails={emailState} />
+          )}
         </Col>
       </Row>
     </Container>

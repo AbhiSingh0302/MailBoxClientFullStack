@@ -31,6 +31,7 @@ const Signup = (props) => {
             "Content-Type": "application/json"
           }
         });
+
       console.log(user);
 
       emailRef.current.value = "";

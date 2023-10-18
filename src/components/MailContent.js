@@ -21,8 +21,8 @@ const MailContent = (props) => {
   }
 
   return (
-    <div className="p-2">
-      <ul style={{ listStyle: "none" }}>
+    <div className="p-2" style={{height: "100vh", overflow: "auto"}}>
+      <ul style={{ listStyle: "none"}}>
         {mails.map((data) => (
           <li
             key={data._id}
