@@ -48,7 +48,7 @@ const verifyAuth = async (req,res,next) => {
 
 const verifyJWT = async (req,res,next) => {
     try {
-        console.log(req.headers.token);
+        // console.log(req.headers.token);
 
         jwt.verify(req.headers.token, process.env.SECRET_KEY, (err,data) => {
             if(err){

@@ -17,23 +17,32 @@ const Mail = () => {
   const [unReadMails, setUnReadMails] = useState("");
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/getmail`, {
-      params: {
-        status: "inbox",
-        email: emailId
-      },
-      headers:{token}
-    }).then(resp => {
-      let i=0;
-      const emails = resp.data.data;
-      emails.forEach(data => {
-        if(!data.read){
-          i++;
-        }
+
+    const intervalId = setInterval(() => {
+      console.log("hello");
+      axios.get(`http://localhost:4000/getmail`, {
+        params: {
+          status: "inbox",
+          email: emailId
+        },
+        headers:{token}
+      }).then(resp => {
+        let i=0;
+        const emails = resp.data.data;
+        emails.forEach(data => {
+          if(!data.read){
+            i++;
+          }
+        })
+        setUnReadMails(i);
       })
-      setUnReadMails(i);
-    })
-  }, [])
+    }, 2000) 
+    
+    return () => {
+      clearInterval(intervalId);
+    }
+
+  },[emailId, token])
 
   const composeEmailHandler = () => {
     setCompose(true);
