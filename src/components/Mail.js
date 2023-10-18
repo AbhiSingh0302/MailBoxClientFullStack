@@ -12,6 +12,8 @@ const Mail = () => {
 
   const emailId = useSelector(status => status.user.email);
 
+  const token = useSelector(status => status.user.token);
+
   const [unReadMails, setUnReadMails] = useState("");
 
   useEffect(() => {
@@ -20,6 +22,7 @@ const Mail = () => {
         status: "inbox",
         email: emailId
       },
+      headers:{token}
     }).then(resp => {
       let i=0;
       const emails = resp.data.data;
@@ -44,7 +47,7 @@ const Mail = () => {
       params: {
         status: "inbox",
         email: emailId
-      },
+      },headers:{token}
     });
     setEmailStateStatus(emails.data.data);
   } catch (error) {
@@ -61,7 +64,7 @@ const Mail = () => {
       params: {
         status: "sent",
         email: emailId
-      },
+      },headers:{token}
     });
     setEmailStateStatus(emails.data.data);
   } catch (error) {
@@ -75,7 +78,7 @@ const Mail = () => {
       params: {
         status: "inbox",
         email: emailId
-      },
+      },headers:{token}
     }).then(resp => {
       let i=0;
       const emails = resp.data.data;

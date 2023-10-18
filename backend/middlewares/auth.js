@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/users");
+const jwt = require("jsonwebtoken");
 
 // console.log(hash);
 
@@ -45,4 +46,24 @@ const verifyAuth = async (req,res,next) => {
     }
 }
 
-module.exports = {auth,verifyAuth};
+const verifyJWT = async (req,res,next) => {
+    try {
+        console.log(req.headers.token);
+
+        jwt.verify(req.headers.token, process.env.SECRET_KEY, (err,data) => {
+            if(err){
+                throw new Error("Unauthorized");
+            }else{
+                next();
+            }
+        });
+        
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            error: error.message
+        })
+    }
+}
+
+module.exports = {auth,verifyAuth,verifyJWT};

@@ -9,6 +9,7 @@ const Main = (props) => {
   const [editorState, setEditorState] = useState("");
   const emailRef = useRef("");
   const email = useSelector(state => state.user.email);
+  const token = useSelector(state => state.user.token);
 
   const onEditorStateChange = (newEditorState) => {
     setEditorState(newEditorState);
@@ -26,7 +27,8 @@ const Main = (props) => {
         text
       }),{
         headers:{
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "token": token
         }
       })
       

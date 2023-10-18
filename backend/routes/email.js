@@ -1,14 +1,15 @@
 const express = require("express");
 const emailControllers = require("../controllers/email");
+const middleware = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.post("/sendmail", emailControllers.sendMail);
+router.post("/sendmail", middleware.verifyJWT, emailControllers.sendMail);
 
-router.get("/getmail", emailControllers.getMail);
+router.get("/getmail", middleware.verifyJWT, emailControllers.getMail);
 
-router.get("/message/:id", emailControllers.getMessage);
+router.get("/message/:id", middleware.verifyJWT, emailControllers.getMessage);
 
-router.get("/delete-mail/:id", emailControllers.deleteMail);
+router.get("/delete-mail/:id", middleware.verifyJWT, emailControllers.deleteMail);
 
 module.exports = router;

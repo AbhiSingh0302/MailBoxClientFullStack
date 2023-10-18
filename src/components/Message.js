@@ -1,12 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 
 const Message = () => {
     const {id} = useParams();
     const [email, setEmail] = useState(null);
+
+    const token = useSelector(state => state.user.token);
+
     useEffect(() => {
-        axios.get(`http://localhost:4000/message/${id}`)
+        axios.get(`http://localhost:4000/message/${id}`,{headers:{token}})
         .then(resp => {
             setEmail(resp.data.data);
         })

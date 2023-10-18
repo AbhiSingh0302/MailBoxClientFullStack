@@ -1,17 +1,20 @@
 import axios from "axios";
 import { Badge, Button } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const MailContent = (props) => {
   const mails = props.mails;
   const history = useHistory();
 
+  const token = useSelector(status => status.user.token);
+
   const clickHandler = (id) => {
     history.push(`/message/${id}`);
   };
 
   const deleteHandler = (id) => {
-    axios.get(`http://localhost:4000/delete-mail/${id}`)
+    axios.get(`http://localhost:4000/delete-mail/${id}`,{headers:{token}})
     .then(resp => {
         console.log(resp);
     })
