@@ -2,79 +2,65 @@ import { useEffect, useState } from "react";
 import { Badge, Button, Col, Container, Row } from "react-bootstrap";
 import Main from "./main/Main";
 import MailContent from "./MailContent";
-import { useSelector } from "react-redux";
-import axios from "axios";
-import useFetch from "../hooks/useFetch";
+import { useFetch, useFetchSent } from "../hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { userActions } from "../stores/user";
 
 const Mail = () => {
-  const [compose, setCompose] = useState(true);
+  const [composeEmail, setComposeEmail] = useState(true);
+  const [emails, setEmails] = useState([]);
+  const [emailHeading, setEmailHeading] = useState("");
 
-  const [emailState, setEmailStateStatus] = useState([]);
+  const inboxEmails = useFetch();
+  const sentEmails = useFetchSent();
 
+  const unReadMailsCount = useSelector(state => state.user.unReadMails);
   const emailId = useSelector((status) => status.user.email);
 
-  const token = useSelector((status) => status.user.token);
-
-  const [unReadMails, setUnReadMails] = useState("");
-
-  const emails = useFetch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let i = 0;
-    if(emails){
-      emails.forEach((data) => {
+    if(inboxEmails){
+      inboxEmails.forEach((data) => {
         if (!data.read) {
           i++;
         }
       });
-      setUnReadMails(i);
+      dispatch(userActions.updateUnreadMails(i));
     }
-  },[emails])
+  },[dispatch,inboxEmails])
 
   const composeEmailHandler = () => {
-    setCompose(true);
+    setComposeEmail(true);
   };
 
   const inboxEmailHandler = async () => {
     try {
-      setCompose(false);
-
-      console.log(emails);
-      setEmailStateStatus(emails);
+      setEmailHeading("Inbox Mails");
+      setEmails(inboxEmails);
+      setComposeEmail(false);
     } catch (error) {
       console.log(error);
-      setEmailStateStatus([]);
+      setEmails([]);
     }
   };
 
   const sentEmailHandler = async () => {
     try {
-      setCompose(false);
-
-      const emails = await axios.get(`http://localhost:4000/getmail`, {
-        params: {
-          status: "sent",
-          email: emailId,
-        },
-        headers: { token },
-      });
-      setEmailStateStatus(emails.data.data);
+      setEmailHeading("Sent Mails");
+      setEmails(sentEmails);
+      setComposeEmail(false);
     } catch (error) {
       console.log(error);
-      setEmailStateStatus([]);
+      setEmails([]);
     }
   };
 
-  const sendHandler = () => {
-    let i = 0;
-    if(emails){
-      emails.forEach((data) => {
-        if (!data.read) {
-          i++;
-        }
-      });
-      setUnReadMails(i);
-    }
+  const sendHandler = (toEmailId) => {
+      if(toEmailId === emailId){
+        dispatch(userActions.updateUnreadMails(unReadMailsCount+1));
+      }
   };
 
   return (
@@ -93,7 +79,7 @@ const Mail = () => {
           <br />
           <div className="d-grid gap-2">
             <Button variant="light" size="lg" onClick={inboxEmailHandler}>
-              Inbox <Badge bg="primary">{unReadMails} unread</Badge>
+              Inbox <Badge bg="primary">{unReadMailsCount} unread</Badge>
             </Button>
           </div>
           <br />
@@ -105,10 +91,10 @@ const Mail = () => {
           <br />
         </Col>
         <Col style={{ height: "100vh", backgroundColor: "#44f9e3" }} sm={9}>
-          {compose ? (
+          {composeEmail ? (
             <Main onSend={sendHandler} />
           ) : (
-            <MailContent mails={emailState} />
+            <MailContent mails={emails} heading={emailHeading}/>
           )}
         </Col>
       </Row>

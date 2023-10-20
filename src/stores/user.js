@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: {email: "", token: "", isLoggedIn: false},
+  initialState: {email: "", token: "", unReadMails: 0, isLoggedIn: false},
   reducers: {
     loggedIn(state,action){
         state.email = action.payload.email;
@@ -13,6 +13,9 @@ const userSlice = createSlice({
         state.email = "";
         state.token = "";
         state.isLoggedIn = false;
+    },
+    updateUnreadMails(state,action){
+      state.unReadMails = action.payload;
     }
   },
 });

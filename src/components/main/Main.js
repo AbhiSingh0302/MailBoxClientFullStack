@@ -21,7 +21,7 @@ const Main = (props) => {
       
       const text = editorState.getCurrentContent().getPlainText();
       
-      const sendMail = await axios.post("http://localhost:4000/sendmail",JSON.stringify({
+      await axios.post("http://localhost:4000/sendmail",JSON.stringify({
         from: email,
         to: emailRef.current.value,
         text
@@ -33,7 +33,7 @@ const Main = (props) => {
       })
       
       alert("Mail has been sent");
-      props.onSend();
+      props.onSend(emailRef.current.value);
     } catch (error) {
       alert("Sending mail failed!!");
     }
